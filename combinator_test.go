@@ -32,6 +32,12 @@ func TestSequenceOf(t *testing.T) {
 			input:       "hello world",
 			shouldError: true,
 		},
+		{
+			name:     "char and string",
+			parsers:  []Parser{Char('h'), String("ello")},
+			input:    "hello world",
+			expected: []interface{}{byte('h'), "ello"},
+		},
 	}
 
 	for _, tt := range tests {
@@ -39,7 +45,7 @@ func TestSequenceOf(t *testing.T) {
 			actual := SequenceOf(tt.parsers...).Run(tt.input)
 
 			if !tt.shouldError {
-				assert.Equal(t, tt.expected, actual.Result())
+				assert.EqualValues(t, tt.expected, actual.Result())
 				assert.Nil(t, actual.Error())
 			} else {
 				assert.Error(t, actual.Error())
