@@ -7,71 +7,85 @@ import (
 )
 
 func TestSequenceOf(t *testing.T) {
-	t.Run("case 1", func(t *testing.T) {
-		p := SequenceOf(
-			String("hello"),
-		)
+	tests := []struct {
+		name        string
+		parsers     []Parser
+		input       string
+		expected    []interface{}
+		shouldError bool
+	}{
+		{
+			name:     "single string",
+			parsers:  []Parser{String("hello")},
+			input:    "hello world",
+			expected: []interface{}{"hello"},
+		},
+		{
+			name:     "multiple string",
+			parsers:  []Parser{String("hello"), String(" "), String("world")},
+			input:    "hello world",
+			expected: []interface{}{"hello", " ", "world"},
+		},
+		{
+			name:        "error",
+			parsers:     []Parser{String("hello"), String("world")},
+			input:       "hello world",
+			shouldError: true,
+		},
+	}
 
-		expected := []interface{}{"hello"}
-		actual := p.Run("hello world").Result()
-		assert.Equal(t, expected, actual)
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := SequenceOf(tt.parsers...).Run(tt.input)
 
-	t.Run("case 2", func(t *testing.T) {
-		p := SequenceOf(
-			String("hello"),
-			String(" "),
-			String("world"),
-		)
-
-		expected := []interface{}{"hello", " ", "world"}
-		actual := p.Run("hello world").Result()
-		assert.Equal(t, expected, actual)
-	})
-
-	t.Run("case 3", func(t *testing.T) {
-		p := SequenceOf(
-			String("hello"),
-			String("world"),
-		)
-
-		actual := p.Run("hello world")
-		assert.Error(t, actual.Error())
-	})
+			if !tt.shouldError {
+				assert.Equal(t, tt.expected, actual.Result())
+				assert.Nil(t, actual.Error())
+			} else {
+				assert.Error(t, actual.Error())
+			}
+		})
+	}
 }
 
 func TestChoice(t *testing.T) {
-	t.Run("case 1", func(t *testing.T) {
-		p := Choice(
-			String("hello"),
-			String("world"),
-		)
+	tests := []struct {
+		name        string
+		parsers     []Parser
+		input       string
+		expected    interface{}
+		shouldError bool
+	}{
+		{
+			name:     "user first parser",
+			parsers:  []Parser{String("hello"), String("world")},
+			input:    "hello",
+			expected: "hello",
+		},
+		{
+			name:     "user second parser",
+			parsers:  []Parser{String("hello"), String("world")},
+			input:    "world",
+			expected: "world",
+		},
+		{
+			name:        "error",
+			parsers:     []Parser{String("a"), String("b")},
+			input:       "dont",
+			shouldError: true,
+		},
+	}
 
-		expected := "world"
-		actual := p.Run("world hello")
-		assert.Equal(t, expected, actual.Result())
-		assert.Nil(t, actual.Error())
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := Choice(tt.parsers...).Run(tt.input)
 
-	t.Run("case 2", func(t *testing.T) {
-		p := Choice(
-			String("hello"),
-			String("world"),
-		)
-
-		expected := "hello"
-		actual := p.Run("hello world")
-		assert.Equal(t, expected, actual.Result())
-		assert.Nil(t, actual.Error())
-	})
-
-	t.Run("case 3", func(t *testing.T) {
-		p := Choice(
-			String("hello"),
-			String("world"),
-		)
-
-		actual := p.Run("no dont")
-		assert.Error(t, actual.Error())
-	})
+			if !tt.shouldError {
+				assert.Equal(t, tt.expected, actual.Result())
+				assert.Nil(t, actual.Error())
+			} else {
+				assert.Error(t, actual.Error())
+			}
+		})
+	}
 }
