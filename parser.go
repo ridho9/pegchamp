@@ -15,7 +15,10 @@ func (p ParserState) Error() error {
 	return p.err
 }
 
-type Parser func(ParserState) ParserState
+// type Parser func(ParserState) ParserState
+type Parser struct {
+	f func(ParserState) ParserState
+}
 
 // Run the parser with `input`
 func (p Parser) Run(input string) ParserState {
@@ -24,5 +27,5 @@ func (p Parser) Run(input string) ParserState {
 		idx:   0,
 	}
 
-	return p(state)
+	return p.f(state)
 }

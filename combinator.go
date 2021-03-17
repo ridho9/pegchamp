@@ -2,26 +2,28 @@ package pegchamp
 
 // SequenceOf takes a list of parsers and applies them sequentially. Returning the result in an array.
 func SequenceOf(parsers ...Parser) Parser {
-	return func(ps ParserState) ParserState {
-		if ps.err != nil {
-			return ps
-		}
-
-		totalResult := []interface{}{}
-		currentState := ps
-
-		for _, parser := range parsers {
-			result := parser(currentState)
-			if result.err != nil {
-				currentState.err = result.err
-				break
+	return Parser{
+		f: func(ps ParserState) ParserState {
+			if ps.err != nil {
+				return ps
 			}
 
-			totalResult = append(totalResult, result.Result())
-			currentState = result
-		}
+			totalResult := []interface{}{}
+			currentState := ps
 
-		currentState.result = totalResult
-		return currentState
+			for _, parser := range parsers {
+				result := parser.f(currentState)
+				if result.err != nil {
+					currentState.err = result.err
+					break
+				}
+
+				totalResult = append(totalResult, result.Result())
+				currentState = result
+			}
+
+			currentState.result = totalResult
+			return currentState
+		},
 	}
 }
