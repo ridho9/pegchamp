@@ -27,3 +27,37 @@ func SequenceOf(parsers ...Parser) Parser {
 		},
 	}
 }
+
+// Choice takes a list of parsers and returns the result of first parsers that match.
+// When all parsers fail, returns the result of the parser that matched the longest.
+func Choice(parsers ...Parser) Parser {
+	return Parser{
+		f: func(ps ParserState) ParserState {
+			if ps.err != nil {
+				return ps
+			}
+
+			triedResult := []ParserState{}
+
+			for _, parser := range parsers {
+				res := parser.f(ps)
+				if res.err == nil {
+					return res
+				}
+				triedResult = append(triedResult, res)
+			}
+
+			// all
+			longest := ParserState{
+				idx: -1,
+			}
+			for _, res := range triedResult {
+				if res.idx > longest.idx {
+					longest = res
+				}
+			}
+
+			return longest
+		},
+	}
+}

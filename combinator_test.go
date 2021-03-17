@@ -36,6 +36,42 @@ func TestSequenceOf(t *testing.T) {
 		)
 
 		actual := p.Run("hello world")
-		assert.NotNil(t, actual.Error())
+		assert.Error(t, actual.Error())
+	})
+}
+
+func TestChoice(t *testing.T) {
+	t.Run("case 1", func(t *testing.T) {
+		p := Choice(
+			String("hello"),
+			String("world"),
+		)
+
+		expected := "world"
+		actual := p.Run("world hello")
+		assert.Equal(t, expected, actual.Result())
+		assert.Nil(t, actual.Error())
+	})
+
+	t.Run("case 2", func(t *testing.T) {
+		p := Choice(
+			String("hello"),
+			String("world"),
+		)
+
+		expected := "hello"
+		actual := p.Run("hello world")
+		assert.Equal(t, expected, actual.Result())
+		assert.Nil(t, actual.Error())
+	})
+
+	t.Run("case 3", func(t *testing.T) {
+		p := Choice(
+			String("hello"),
+			String("world"),
+		)
+
+		actual := p.Run("no dont")
+		assert.Error(t, actual.Error())
 	})
 }
