@@ -1,10 +1,10 @@
 package pegchamp
 
 type ParserState struct {
-	input      string
-	matchedLen int
-	result     interface{}
-	err        error
+	input  string
+	idx    int
+	result interface{}
+	err    error
 }
 
 func (p ParserState) Result() interface{} {
@@ -17,9 +17,11 @@ func (p ParserState) Error() error {
 
 type Parser func(ParserState) ParserState
 
+// Run the parser with `input`
 func (p Parser) Run(input string) ParserState {
 	state := ParserState{
 		input: input,
+		idx:   0,
 	}
 
 	return p(state)

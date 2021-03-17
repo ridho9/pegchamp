@@ -5,26 +5,31 @@ import (
 	"strings"
 )
 
+// String takes `str` and only match that string one time.
 func String(str string) Parser {
-	return func(state ParserState) ParserState {
-		if state.err != nil {
-			return state
+	return func(ps ParserState) ParserState {
+		if ps.err != nil {
+			return ps
 		}
 
-		if strings.HasPrefix(state.input, str) {
-			state.result = str
-			state.input = state.input[len(str):]
-			state.matchedLen += len(str)
+		if strings.HasPrefix(ps.input[ps.idx:], str) {
+			ps.result = str
+			ps.idx += len(str)
 		} else {
-			state.err = fmt.Errorf("expected '%s' but found '%.16s'", str, state.input)
+			ps.err = fmt.Errorf("expected '%s' but found '%.16s'", str, ps.input)
 		}
 
-		return state
+		return ps
 	}
 }
 
+// SequenceOf takes a list of parsers and applies them sequentially. Returning the result in an array.
 func SequenceOf(parsers ...Parser) Parser {
 	return func(ps ParserState) ParserState {
+		if ps.err != nil {
+			return ps
+		}
+
 		totalResult := []interface{}{}
 		currentState := ps
 
