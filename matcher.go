@@ -17,7 +17,31 @@ func String(str string) Parser {
 				ps.result = str
 				ps.idx += len(str)
 			} else {
-				ps.err = fmt.Errorf("expected \"%s\" but found \"%.16s\"'", str, ps.input)
+				ps.err = fmt.Errorf("expected \"%s\" but found \"%.16s\"", str, ps.input[ps.idx:])
+			}
+
+			return ps
+		},
+	}
+}
+
+func Char(c byte) Parser {
+	return Parser{
+		f: func(ps ParserState) ParserState {
+			if ps.err != nil {
+				return ps
+			}
+
+			if ps.idx >= len(ps.input) {
+				ps.err = fmt.Errorf("expected '%c' but found end of input", c)
+				return ps
+			}
+
+			if ps.input[ps.idx] == c {
+				ps.result = ps.input[ps.idx]
+				ps.idx += 1
+			} else {
+				ps.err = fmt.Errorf("expected '%c' but found '%.16s'", c, ps.input[ps.idx:])
 			}
 
 			return ps
