@@ -7,6 +7,10 @@ type ParserState struct {
 	err    error
 }
 
+func (ps ParserState) outOfBound() bool {
+	return ps.idx >= len(ps.input)
+}
+
 func (p ParserState) Result() interface{} {
 	return p.result
 }

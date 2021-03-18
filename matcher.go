@@ -13,6 +13,11 @@ func String(str string) Parser {
 				return ps
 			}
 
+			if ps.outOfBound() {
+				ps.err = fmt.Errorf("expected \"%s\" but found end of input", str)
+				return ps
+			}
+
 			if strings.HasPrefix(ps.input[ps.idx:], str) {
 				ps.result = str
 				ps.idx += len(str)
@@ -33,7 +38,7 @@ func Char(c byte) Parser {
 				return ps
 			}
 
-			if ps.idx >= len(ps.input) {
+			if ps.outOfBound() {
 				ps.err = fmt.Errorf("expected '%c' but found end of input", c)
 				return ps
 			}
