@@ -169,3 +169,46 @@ func TestMany(t *testing.T) {
 		})
 	}
 }
+
+func TestOneOrMore(t *testing.T) {
+	tests := []struct {
+		name        string
+		first       Parser
+		input       string
+		expected    interface{}
+		shouldError bool
+	}{
+		{
+			name:     "correct",
+			first:    String("h"),
+			input:    "hello",
+			expected: []interface{}{"h"},
+		},
+		{
+			name:     "correct 2",
+			first:    String("h"),
+			input:    "hhello",
+			expected: []interface{}{"h", "h"},
+		},
+		{
+			name:        "one or more",
+			first:       String("h"),
+			input:       "ello",
+			expected:    []interface{}{},
+			shouldError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := OneOrMore(tt.first).Run(tt.input)
+
+			if !tt.shouldError {
+				assert.Equal(t, tt.expected, actual.Result())
+				assert.Nil(t, actual.Error())
+			} else {
+				assert.Error(t, actual.Error())
+			}
+		})
+	}
+}

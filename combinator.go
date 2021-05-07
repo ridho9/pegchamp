@@ -105,3 +105,33 @@ func Many(parser Parser) Parser {
 		},
 	}
 }
+
+// OneOrMore will run `parser` for 1 or more times until it errors, and accumulate it in an array.
+// Not matching any will returns the first error.
+func OneOrMore(parser Parser) Parser {
+	return Parser{
+		Func: func(ps ParserState) ParserState {
+			if ps.err != nil {
+				return ps
+			}
+
+			totalResult := []interface{}{}
+			currentState := ps
+
+			for {
+				currentState = parser.Func(currentState)
+				if currentState.err != nil {
+					if len(totalResult) > 0 {
+						currentState.err = nil
+					}
+					break
+				}
+
+				totalResult = append(totalResult, currentState.Result())
+			}
+
+			currentState.result = totalResult
+			return currentState
+		},
+	}
+}
