@@ -12,14 +12,12 @@ func SequenceOf(parsers ...Parser) Parser {
 			currentState := ps
 
 			for _, parser := range parsers {
-				result := parser.Func(currentState)
-				if result.err != nil {
-					currentState.err = result.err
+				currentState = parser.Func(currentState)
+				if currentState.err != nil {
 					break
 				}
 
-				totalResult = append(totalResult, result.Result())
-				currentState = result
+				totalResult = append(totalResult, currentState.Result())
 			}
 
 			currentState.result = totalResult
@@ -77,6 +75,33 @@ func TakeSecond(first Parser, second Parser) Parser {
 			}
 
 			return second.Func(res1)
+		},
+	}
+}
+
+// Many will run `parser` for 0 or more times until it errors, and accumulate it in an array.
+func Many(parser Parser) Parser {
+	return Parser{
+		Func: func(ps ParserState) ParserState {
+			if ps.err != nil {
+				return ps
+			}
+
+			totalResult := []interface{}{}
+			currentState := ps
+
+			for {
+				currentState = parser.Func(currentState)
+				if currentState.err != nil {
+					currentState.err = nil
+					break
+				}
+
+				totalResult = append(totalResult, currentState.Result())
+			}
+
+			currentState.result = totalResult
+			return currentState
 		},
 	}
 }
