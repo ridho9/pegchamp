@@ -21,7 +21,7 @@ func (p ParserState) Error() error {
 
 // type Parser func(ParserState) ParserState
 type Parser struct {
-	f func(ParserState) ParserState
+	Func func(ParserState) ParserState
 }
 
 // Map takes a mapper function that takes the parser result and return new result.
@@ -30,8 +30,8 @@ type Parser struct {
 // so it could be expected only a successful result is passed.
 func (p Parser) Map(mapper func(ps ParserState) interface{}) Parser {
 	return Parser{
-		f: func(ps ParserState) ParserState {
-			res := p.f(ps)
+		Func: func(ps ParserState) ParserState {
+			res := p.Func(ps)
 			if res.err != nil {
 				return res
 			}
@@ -49,5 +49,5 @@ func (p Parser) Run(input string) ParserState {
 		idx:   0,
 	}
 
-	return p.f(state)
+	return p.Func(state)
 }

@@ -95,3 +95,35 @@ func TestChoice(t *testing.T) {
 		})
 	}
 }
+
+func TestTakeSecond(t *testing.T) {
+	tests := []struct {
+		name        string
+		first       Parser
+		second      Parser
+		input       string
+		expected    interface{}
+		shouldError bool
+	}{
+		{
+			name:     "correct",
+			first:    String("h"),
+			second:   String("ello"),
+			input:    "hello",
+			expected: "ello",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := TakeSecond(tt.first, tt.second).Run(tt.input)
+
+			if !tt.shouldError {
+				assert.Equal(t, tt.expected, actual.Result())
+				assert.Nil(t, actual.Error())
+			} else {
+				assert.Error(t, actual.Error())
+			}
+		})
+	}
+}

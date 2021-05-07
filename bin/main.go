@@ -3,10 +3,42 @@ package main
 import (
 	"fmt"
 
-	_ "github.com/ridho9/pegchamp"
+	peg "github.com/ridho9/pegchamp"
 )
 
 func main() {
-	s := "日本語"
-	fmt.Println(s[0])
+	weatherString := peg.String("Weather")
+
+	timeString := peg.SequenceOf(
+		peg.String("("),
+		peg.Choice(
+			peg.String("today"),
+			peg.String("yesterday"),
+		),
+		peg.String(")"),
+	).Map(func(ps peg.ParserState) interface{} {
+		return ps.Result().([]interface{})[1]
+	})
+
+	weatherType := peg.Choice(
+		peg.String("Sunny"),
+		peg.String("Rainy"),
+		peg.String("Rainy"),
+	)
+
+	fullParser := peg.SequenceOf(
+		weatherString,
+		peg.TakeSecond(
+			peg.String(" "),
+			timeString,
+		),
+		peg.TakeSecond(
+			peg.String(": "),
+			weatherType,
+		),
+	)
+
+	run := fullParser.Run("Weather (today): Sunny")
+	fmt.Printf("%e\n", run.Error())
+	fmt.Printf("%#v\n", run.Result())
 }
