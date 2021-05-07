@@ -106,9 +106,9 @@ func Many(parser Parser) Parser {
 	}
 }
 
-// OneOrMore will run `parser` for 1 or more times until it errors, and accumulate it in an array.
+// Many1 will run `parser` for 1 or more times until it errors, and accumulate it in an array.
 // Not matching any will returns the first error.
-func OneOrMore(parser Parser) Parser {
+func Many1(parser Parser) Parser {
 	return Parser{
 		Func: func(ps ParserState) ParserState {
 			if ps.err != nil {

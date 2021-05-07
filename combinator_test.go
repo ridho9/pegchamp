@@ -170,7 +170,7 @@ func TestMany(t *testing.T) {
 	}
 }
 
-func TestOneOrMore(t *testing.T) {
+func TestMany1(t *testing.T) {
 	tests := []struct {
 		name        string
 		first       Parser
@@ -201,7 +201,7 @@ func TestOneOrMore(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := OneOrMore(tt.first).Run(tt.input)
+			actual := Many1(tt.first).Run(tt.input)
 
 			if !tt.shouldError {
 				assert.Equal(t, tt.expected, actual.Result())
