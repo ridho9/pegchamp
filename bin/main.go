@@ -41,4 +41,14 @@ func main() {
 	run := fullParser.Run("Weather (today): Sunny")
 	fmt.Printf("%e\n", run.Error())
 	fmt.Printf("%#v\n", run.Result())
+
+	p := peg.SequenceOf(
+		peg.Alphas(),
+		peg.String(" "),
+		peg.Alphas(),
+	)
+
+	run = p.Run("hello world")
+	fmt.Printf("%e\n", run.Error())
+	fmt.Printf("%#v\n", run.Result())
 }

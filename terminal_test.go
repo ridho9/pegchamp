@@ -42,3 +42,40 @@ func TestAlpha(t *testing.T) {
 		})
 	}
 }
+
+func TestAlphas(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       string
+		want        string
+		shouldError bool
+	}{
+		{
+			name:  "success",
+			input: "hello world",
+			want:  "hello",
+		},
+		{
+			name:  "success 2",
+			input: "hello",
+			want:  "hello",
+		},
+		{
+			name:        "minimal one",
+			input:       "1",
+			shouldError: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := Alphas().Run(tt.input)
+
+			if !tt.shouldError {
+				assert.Equal(t, tt.want, actual.Result())
+				assert.Nil(t, actual.Error())
+			} else {
+				assert.Error(t, actual.Error())
+			}
+		})
+	}
+}
