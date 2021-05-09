@@ -51,3 +51,18 @@ func (p Parser) Run(input string) ParserState {
 
 	return p.Func(state)
 }
+
+// MapConstant replaces the result with `val` when the parser succeeds
+func (p Parser) MapConstant(val interface{}) Parser {
+	return Parser{
+		Func: func(ps ParserState) ParserState {
+			res := p.Func(ps)
+			if res.err != nil {
+				return res
+			}
+
+			res.result = val
+			return res
+		},
+	}
+}
