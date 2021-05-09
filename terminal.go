@@ -123,6 +123,31 @@ func Numbers() Parser {
 	}
 }
 
+// OptionalWhitespaces takes zero or more whitespaces characters and return it in a string.
+func OptionalWhitespaces() Parser {
+	return Parser{
+		Func: func(ps ParserState) ParserState {
+			if ps.err != nil {
+				return ps
+			}
+
+			builder := strings.Builder{}
+			for ps.idx < len(ps.input) {
+				head := ps.input[ps.idx]
+				if !isByteWhitespace(head) {
+					break
+				}
+
+				builder.WriteByte(head)
+				ps.idx += 1
+			}
+
+			ps.result = builder.String()
+			return ps
+		},
+	}
+}
+
 func isByteAlpha(b byte) bool {
 	insideLower := ('a' <= b) && (b <= 'z')
 	insideUpper := ('A' <= b) && (b <= 'Z')
@@ -131,4 +156,8 @@ func isByteAlpha(b byte) bool {
 
 func isByteNumber(b byte) bool {
 	return ('0' <= b) && (b <= '9')
+}
+
+func isByteWhitespace(b byte) bool {
+	return b == ' ' || b == '\t' || b == '\n' || b == '\r'
 }

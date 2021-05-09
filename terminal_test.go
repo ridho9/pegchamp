@@ -153,3 +153,50 @@ func TestNumbers(t *testing.T) {
 		})
 	}
 }
+
+func TestOptionalWhitespaces(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       string
+		want        string
+		shouldError bool
+	}{
+		{
+			name:  "success",
+			input: " 456",
+			want:  " ",
+		},
+		{
+			name:  "success 2",
+			input: "asd",
+			want:  "",
+		},
+		{
+			name:  "success 3",
+			input: " \t\n\r123",
+			want:  " \t\n\r",
+		},
+		{
+			name:  "success 4",
+			input: " \t\n\r",
+			want:  " \t\n\r",
+		},
+		{
+			name:  "success 5",
+			input: "",
+			want:  "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := OptionalWhitespaces().Run(tt.input)
+
+			if !tt.shouldError {
+				assert.Equal(t, tt.want, actual.Result())
+				assert.Nil(t, actual.Error())
+			} else {
+				assert.Error(t, actual.Error())
+			}
+		})
+	}
+}
