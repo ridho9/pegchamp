@@ -3,6 +3,7 @@ package pegchamp
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 )
 
 // Alpha takes a single alphabetical `/[a-zA-Z]/`` character and return it in a string.
@@ -18,10 +19,10 @@ func Alpha() Parser {
 				return ps
 			}
 
-			head := ps.input[ps.idx]
-			if isByteAlpha(head) {
-				ps.result = ps.input[ps.idx : ps.idx+1]
-				ps.idx += 1
+			head, size := utf8.DecodeRuneInString(ps.input[ps.idx:])
+			if isRuneAlpha(head) {
+				ps.result = string(head)
+				ps.idx += size
 				return ps
 			}
 
@@ -45,14 +46,11 @@ func Alphas() Parser {
 			}
 
 			builder := strings.Builder{}
-			for ps.idx < len(ps.input) {
-				head := ps.input[ps.idx]
-				if !isByteAlpha(head) {
+			for _, runeValue := range ps.input[ps.idx:] {
+				if !isRuneAlpha(runeValue) {
 					break
 				}
-
-				builder.WriteByte(head)
-				ps.idx += 1
+				builder.WriteRune(runeValue)
 			}
 
 			ps.result = builder.String()
@@ -77,10 +75,10 @@ func Number() Parser {
 				return ps
 			}
 
-			head := ps.input[ps.idx]
-			if isByteNumber(head) {
-				ps.result = ps.input[ps.idx : ps.idx+1]
-				ps.idx += 1
+			head, size := utf8.DecodeRuneInString(ps.input[ps.idx:])
+			if isRuneNumber(head) {
+				ps.result = string(head)
+				ps.idx += size
 				return ps
 			}
 
@@ -104,16 +102,14 @@ func Numbers() Parser {
 			}
 
 			builder := strings.Builder{}
-			for ps.idx < len(ps.input) {
-				head := ps.input[ps.idx]
-				if !isByteNumber(head) {
+			for _, runeValue := range ps.input[ps.idx:] {
+				if !isRuneNumber(runeValue) {
 					break
 				}
-
-				builder.WriteByte(head)
-				ps.idx += 1
+				builder.WriteRune(runeValue)
 			}
 
+			ps.idx += builder.Len()
 			ps.result = builder.String()
 			if ps.result == "" {
 				ps.err = fmt.Errorf("expected numerical but found \"%.16s\"", ps.input[ps.idx:])
@@ -132,32 +128,30 @@ func OptionalWhitespaces() Parser {
 			}
 
 			builder := strings.Builder{}
-			for ps.idx < len(ps.input) {
-				head := ps.input[ps.idx]
-				if !isByteWhitespace(head) {
+			for _, runeValue := range ps.input[ps.idx:] {
+				if !isRuneWhitespace(runeValue) {
 					break
 				}
-
-				builder.WriteByte(head)
-				ps.idx += 1
+				builder.WriteRune(runeValue)
 			}
 
+			ps.idx += builder.Len()
 			ps.result = builder.String()
 			return ps
 		},
 	}
 }
 
-func isByteAlpha(b byte) bool {
-	insideLower := ('a' <= b) && (b <= 'z')
-	insideUpper := ('A' <= b) && (b <= 'Z')
+func isRuneAlpha(r rune) bool {
+	insideLower := ('a' <= r) && (r <= 'z')
+	insideUpper := ('A' <= r) && (r <= 'Z')
 	return insideLower || insideUpper
 }
 
-func isByteNumber(b byte) bool {
-	return ('0' <= b) && (b <= '9')
+func isRuneNumber(r rune) bool {
+	return ('0' <= r) && (r <= '9')
 }
 
-func isByteWhitespace(b byte) bool {
-	return b == ' ' || b == '\t' || b == '\n' || b == '\r'
+func isRuneWhitespace(r rune) bool {
+	return r == ' ' || r == '\t' || r == '\n' || r == '\r'
 }
