@@ -2,7 +2,6 @@ package pegchamp
 
 import (
 	"fmt"
-	"strings"
 	"unicode/utf8"
 )
 
@@ -45,15 +44,16 @@ func Alphas() Parser {
 				return ps
 			}
 
-			builder := strings.Builder{}
+			totalLen := 0
 			for _, runeValue := range ps.input[ps.idx:] {
 				if !isRuneAlpha(runeValue) {
 					break
 				}
-				builder.WriteRune(runeValue)
+				totalLen += utf8.RuneLen(runeValue)
 			}
 
-			ps.result = builder.String()
+			ps.result = ps.input[ps.idx : ps.idx+totalLen]
+			ps.idx += totalLen
 			if ps.result == "" {
 				ps.err = fmt.Errorf("expected alphabetical but found \"%.16s\"", ps.input[ps.idx:])
 			}
@@ -101,16 +101,16 @@ func Numbers() Parser {
 				return ps
 			}
 
-			builder := strings.Builder{}
+			totalLen := 0
 			for _, runeValue := range ps.input[ps.idx:] {
 				if !isRuneNumber(runeValue) {
 					break
 				}
-				builder.WriteRune(runeValue)
+				totalLen += utf8.RuneLen(runeValue)
 			}
 
-			ps.idx += builder.Len()
-			ps.result = builder.String()
+			ps.result = ps.input[ps.idx : ps.idx+totalLen]
+			ps.idx += totalLen
 			if ps.result == "" {
 				ps.err = fmt.Errorf("expected numerical but found \"%.16s\"", ps.input[ps.idx:])
 			}
@@ -127,16 +127,16 @@ func OptionalWhitespaces() Parser {
 				return ps
 			}
 
-			builder := strings.Builder{}
+			totalLen := 0
 			for _, runeValue := range ps.input[ps.idx:] {
 				if !isRuneWhitespace(runeValue) {
 					break
 				}
-				builder.WriteRune(runeValue)
+				totalLen += utf8.RuneLen(runeValue)
 			}
 
-			ps.idx += builder.Len()
-			ps.result = builder.String()
+			ps.result = ps.input[ps.idx : ps.idx+totalLen]
+			ps.idx += totalLen
 			return ps
 		},
 	}
