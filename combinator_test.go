@@ -212,3 +212,39 @@ func TestMany1(t *testing.T) {
 		})
 	}
 }
+
+func TestOptional(t *testing.T) {
+	tests := []struct {
+		name        string
+		first       Parser
+		input       string
+		expected    interface{}
+		shouldError bool
+	}{
+		{
+			name:     "correct",
+			first:    String("h"),
+			input:    "hello",
+			expected: "h",
+		},
+		{
+			name:     "when not match",
+			first:    String("h"),
+			input:    "ello",
+			expected: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := Optional(tt.first).Run(tt.input)
+
+			if !tt.shouldError {
+				assert.Equal(t, tt.expected, actual.Result())
+				assert.Nil(t, actual.Error())
+			} else {
+				assert.Error(t, actual.Error())
+			}
+		})
+	}
+}

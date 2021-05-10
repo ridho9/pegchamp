@@ -135,3 +135,21 @@ func Many1(parser Parser) Parser {
 		},
 	}
 }
+
+// Optional will tries `parser`, returning `nil` when fails.
+func Optional(parser Parser) Parser {
+	return Parser{
+		Func: func(ps ParserState) ParserState {
+			if ps.err != nil {
+				return ps
+			}
+
+			res := parser.Func(ps)
+			if res.err != nil {
+				res = ps
+				res.result = nil
+			}
+			return res
+		},
+	}
+}
