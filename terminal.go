@@ -8,7 +8,7 @@ import (
 // Alpha takes a single alphabetical `/[a-zA-Z]/`` character and return it in a string.
 func Alpha() Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
+		parserFunc: func(ps ParserState) ParserState {
 			if ps.err != nil {
 				return ps
 			}
@@ -34,7 +34,7 @@ func Alpha() Parser {
 // Alphas takes more than one alphabetical `/[a-zA-Z]+/` characters and return it in a string.
 func Alphas() Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
+		parserFunc: func(ps ParserState) ParserState {
 			if ps.err != nil {
 				return ps
 			}
@@ -65,7 +65,7 @@ func Alphas() Parser {
 // Number takes a single numerical `/[0-9]/`` character and return it in a string.
 func Number() Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
+		parserFunc: func(ps ParserState) ParserState {
 			if ps.err != nil {
 				return ps
 			}
@@ -91,7 +91,7 @@ func Number() Parser {
 // Numbers takes more than one numerical `/[0-9]+/` characters and return it in a string.
 func Numbers() Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
+		parserFunc: func(ps ParserState) ParserState {
 			if ps.err != nil {
 				return ps
 			}
@@ -122,7 +122,7 @@ func Numbers() Parser {
 // OptionalWhitespaces takes zero or more whitespaces characters and return it in a string.
 func OptionalWhitespaces() Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
+		parserFunc: func(ps ParserState) ParserState {
 			if ps.err != nil {
 				return ps
 			}

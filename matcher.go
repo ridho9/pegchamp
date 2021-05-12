@@ -8,7 +8,7 @@ import (
 // String takes `str` and only match that string one time.
 func String(str string) Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
+		parserFunc: func(ps ParserState) ParserState {
 			if ps.err != nil {
 				return ps
 			}
@@ -33,7 +33,7 @@ func String(str string) Parser {
 // Char only matches one byte at a time. Works weirdly due to golang using byte as char.
 func Char(c byte) Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
+		parserFunc: func(ps ParserState) ParserState {
 			if ps.err != nil {
 				return ps
 			}

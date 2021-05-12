@@ -47,7 +47,13 @@ func (p ParserState) SetError(val error) ParserState {
 }
 
 type Parser struct {
-	Func func(ParserState) ParserState
+	parserFunc func(ParserState) ParserState
+}
+
+func NewParser(f func(ParserState) ParserState) Parser {
+	return Parser{
+		parserFunc: f,
+	}
 }
 
 // Run the parser with `input`
@@ -57,7 +63,14 @@ func (p Parser) Run(input string) ParserState {
 		idx:   0,
 	}
 
-	return p.Func(state)
+	return p.parserFunc(state)
+}
+
+func (p Parser) Parse(ps ParserState) ParserState {
+	if ps.err != nil {
+		return ps
+	}
+	return p.parserFunc(ps)
 }
 
 // Map takes a mapper function that takes the parser result and return new result.
@@ -68,8 +81,8 @@ func (p Parser) Run(input string) ParserState {
 // parser state.
 func (p Parser) Map(mapper func(ps ParserState) (interface{}, error)) Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
-			res := p.Func(ps)
+		parserFunc: func(ps ParserState) ParserState {
+			res := p.parserFunc(ps)
 			if res.err != nil {
 				return res
 			}
@@ -85,8 +98,8 @@ func (p Parser) Map(mapper func(ps ParserState) (interface{}, error)) Parser {
 // MapConstant replaces the result with `val` when the parser succeeds
 func (p Parser) MapConstant(val interface{}) Parser {
 	return Parser{
-		Func: func(ps ParserState) ParserState {
-			res := p.Func(ps)
+		parserFunc: func(ps ParserState) ParserState {
+			res := p.parserFunc(ps)
 			if res.err != nil {
 				return res
 			}
