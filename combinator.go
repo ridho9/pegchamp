@@ -37,7 +37,6 @@ func Choice(parsers ...Parser) Parser {
 				triedResult = append(triedResult, res)
 			}
 
-			// all
 			longest := ParserState{
 				idx: -1,
 			}
