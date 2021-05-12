@@ -8,8 +8,8 @@ import (
 
 func TestMap(t *testing.T) {
 	t.Run("one map", func(t *testing.T) {
-		parser := String("hello").Map(func(ps ParserState) interface{} {
-			return []interface{}{ps.result}
+		parser := String("hello").Map(func(ps ParserState) (interface{}, error) {
+			return []interface{}{ps.result}, nil
 		})
 		expected := []interface{}{"hello"}
 		actual := parser.Run("hello world")
@@ -18,10 +18,10 @@ func TestMap(t *testing.T) {
 	})
 
 	t.Run("two map", func(t *testing.T) {
-		parser := String("hello").Map(func(ps ParserState) interface{} {
-			return []interface{}{ps.result}
-		}).Map(func(ps ParserState) interface{} {
-			return ps.result.([]interface{})[0]
+		parser := String("hello").Map(func(ps ParserState) (interface{}, error) {
+			return []interface{}{ps.result}, nil
+		}).Map(func(ps ParserState) (interface{}, error) {
+			return ps.result.([]interface{})[0], nil
 		})
 		expected := "hello"
 		actual := parser.Run("hello world")
@@ -30,10 +30,10 @@ func TestMap(t *testing.T) {
 	})
 
 	t.Run("mapping error result", func(t *testing.T) {
-		parser := String("hello").Map(func(ps ParserState) interface{} {
-			return []interface{}{ps.result}
-		}).Map(func(ps ParserState) interface{} {
-			return ps.result.([]interface{})[0]
+		parser := String("hello").Map(func(ps ParserState) (interface{}, error) {
+			return []interface{}{ps.result}, nil
+		}).Map(func(ps ParserState) (interface{}, error) {
+			return ps.result.([]interface{})[0], nil
 		})
 		actual := parser.Run("world")
 		assert.Error(t, actual.Error())

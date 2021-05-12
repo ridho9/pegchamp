@@ -13,7 +13,7 @@ func String(str string) Parser {
 				return ps
 			}
 
-			if ps.outOfBound() {
+			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected \"%s\" but found end of input", str)
 				return ps
 			}
@@ -38,7 +38,7 @@ func Char(c byte) Parser {
 				return ps
 			}
 
-			if ps.outOfBound() {
+			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected '%c' but found end of input", c)
 				return ps
 			}

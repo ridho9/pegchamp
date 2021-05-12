@@ -13,7 +13,7 @@ func Alpha() Parser {
 				return ps
 			}
 
-			if ps.outOfBound() {
+			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected alphabetical but found end of input")
 				return ps
 			}
@@ -39,7 +39,7 @@ func Alphas() Parser {
 				return ps
 			}
 
-			if ps.outOfBound() {
+			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected alphabetical but found end of input")
 				return ps
 			}
@@ -70,7 +70,7 @@ func Number() Parser {
 				return ps
 			}
 
-			if ps.outOfBound() {
+			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected numerical but found end of input")
 				return ps
 			}
@@ -96,7 +96,7 @@ func Numbers() Parser {
 				return ps
 			}
 
-			if ps.outOfBound() {
+			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected numerical but found end of input")
 				return ps
 			}

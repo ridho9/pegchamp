@@ -16,8 +16,8 @@ func main() {
 			peg.String("yesterday"),
 		),
 		peg.String(")"),
-	).Map(func(ps peg.ParserState) interface{} {
-		return ps.Result().([]interface{})[1]
+	).Map(func(ps peg.ParserState) (interface{}, error) {
+		return ps.Result().([]interface{})[1], nil
 	})
 
 	weatherType := peg.Choice(

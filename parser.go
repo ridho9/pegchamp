@@ -7,16 +7,43 @@ type ParserState struct {
 	err    error
 }
 
-func (ps ParserState) outOfBound() bool {
+func (ps ParserState) OutOfBound() bool {
 	return ps.idx >= len(ps.input)
+}
+
+func (p ParserState) Head() string {
+	return p.input[p.idx:]
+}
+
+func (p ParserState) Index() int {
+	return p.idx
+}
+
+func (p ParserState) AdvanceIndex(val int) ParserState {
+	p.idx += val
+	return p
+}
+
+func (p ParserState) InputLen() int {
+	return len(p.input)
 }
 
 func (p ParserState) Result() interface{} {
 	return p.result
 }
 
+func (p ParserState) SetResult(res interface{}) ParserState {
+	p.result = res
+	return p
+}
+
 func (p ParserState) Error() error {
 	return p.err
+}
+
+func (p ParserState) SetError(val error) ParserState {
+	p.err = val
+	return p
 }
 
 type Parser struct {
@@ -37,7 +64,7 @@ func (p Parser) Run(input string) ParserState {
 // Other part of the ParserState won't be changed.
 // The mapper function won't be run in the case of an error
 // so it could be expected only a successful result is passed.
-func (p Parser) Map(mapper func(ps ParserState) interface{}) Parser {
+func (p Parser) Map(mapper func(ps ParserState) (interface{}, error)) Parser {
 	return Parser{
 		Func: func(ps ParserState) ParserState {
 			res := p.Func(ps)
@@ -45,7 +72,9 @@ func (p Parser) Map(mapper func(ps ParserState) interface{}) Parser {
 				return res
 			}
 
-			res.result = mapper(res)
+			mapRes, err := mapper(res)
+			res.err = err
+			res.result = mapRes
 			return res
 		},
 	}
