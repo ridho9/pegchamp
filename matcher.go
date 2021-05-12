@@ -9,10 +9,6 @@ import (
 func String(str string) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected \"%s\" but found end of input", str)
 				return ps
@@ -34,10 +30,6 @@ func String(str string) Parser {
 func Char(c byte) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected '%c' but found end of input", c)
 				return ps

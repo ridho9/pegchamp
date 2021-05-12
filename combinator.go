@@ -4,15 +4,11 @@ package pegchamp
 func SequenceOf(parsers ...Parser) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			totalResult := []interface{}{}
 			currentState := ps
 
 			for _, parser := range parsers {
-				currentState = parser.parserFunc(currentState)
+				currentState = parser.Parse(currentState)
 				if currentState.err != nil {
 					break
 				}
@@ -31,14 +27,10 @@ func SequenceOf(parsers ...Parser) Parser {
 func Choice(parsers ...Parser) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			triedResult := []ParserState{}
 
 			for _, parser := range parsers {
-				res := parser.parserFunc(ps)
+				res := parser.Parse(ps)
 				if res.err == nil {
 					return res
 				}
@@ -65,16 +57,12 @@ func Choice(parsers ...Parser) Parser {
 func TakeSecond(first Parser, second Parser) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
-			res1 := first.parserFunc(ps)
+			res1 := first.Parse(ps)
 			if res1.err != nil {
 				return res1
 			}
 
-			return second.parserFunc(res1)
+			return second.Parse(res1)
 		},
 	}
 }
@@ -83,15 +71,11 @@ func TakeSecond(first Parser, second Parser) Parser {
 func Many(parser Parser) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			totalResult := []interface{}{}
 			currentState := ps
 
 			for {
-				currentState = parser.parserFunc(currentState)
+				currentState = parser.Parse(currentState)
 				if currentState.err != nil {
 					currentState.err = nil
 					break
@@ -111,15 +95,11 @@ func Many(parser Parser) Parser {
 func Many1(parser Parser) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			totalResult := []interface{}{}
 			currentState := ps
 
 			for {
-				currentState = parser.parserFunc(currentState)
+				currentState = parser.Parse(currentState)
 				if currentState.err != nil {
 					if len(totalResult) > 0 {
 						currentState.err = nil
@@ -140,11 +120,7 @@ func Many1(parser Parser) Parser {
 func Optional(parser Parser) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
-			res := parser.parserFunc(ps)
+			res := parser.Parse(ps)
 			if res.err != nil {
 				res = ps
 				res.result = nil

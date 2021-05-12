@@ -63,7 +63,7 @@ func (p Parser) Run(input string) ParserState {
 		idx:   0,
 	}
 
-	return p.parserFunc(state)
+	return p.Parse(state)
 }
 
 func (p Parser) Parse(ps ParserState) ParserState {
@@ -82,7 +82,7 @@ func (p Parser) Parse(ps ParserState) ParserState {
 func (p Parser) Map(mapper func(ps ParserState) (interface{}, error)) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			res := p.parserFunc(ps)
+			res := p.Parse(ps)
 			if res.err != nil {
 				return res
 			}
@@ -99,7 +99,7 @@ func (p Parser) Map(mapper func(ps ParserState) (interface{}, error)) Parser {
 func (p Parser) MapConstant(val interface{}) Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			res := p.parserFunc(ps)
+			res := p.Parse(ps)
 			if res.err != nil {
 				return res
 			}

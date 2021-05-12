@@ -9,10 +9,6 @@ import (
 func Alpha() Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected alphabetical but found end of input")
 				return ps
@@ -35,10 +31,6 @@ func Alpha() Parser {
 func Alphas() Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected alphabetical but found end of input")
 				return ps
@@ -66,10 +58,6 @@ func Alphas() Parser {
 func Number() Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected numerical but found end of input")
 				return ps
@@ -92,10 +80,6 @@ func Number() Parser {
 func Numbers() Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			if ps.OutOfBound() {
 				ps.err = fmt.Errorf("expected numerical but found end of input")
 				return ps
@@ -123,10 +107,6 @@ func Numbers() Parser {
 func OptionalWhitespaces() Parser {
 	return Parser{
 		parserFunc: func(ps ParserState) ParserState {
-			if ps.err != nil {
-				return ps
-			}
-
 			totalLen := 0
 			for _, runeValue := range ps.input[ps.idx:] {
 				if !isRuneWhitespace(runeValue) {
