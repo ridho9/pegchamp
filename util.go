@@ -10,3 +10,10 @@ func ParserPointer(p *Parser) Parser {
 		},
 	}
 }
+
+func IgnoreLeadingWhitespace(p Parser) Parser {
+	return TakeSecond(
+		OptionalWhitespaces(),
+		p,
+	)
+}
