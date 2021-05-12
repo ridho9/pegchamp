@@ -62,8 +62,10 @@ func (p Parser) Run(input string) ParserState {
 
 // Map takes a mapper function that takes the parser result and return new result.
 // Other part of the ParserState won't be changed.
-// The mapper function won't be run in the case of an error
+// The mapper function won't be run in the case of a parsing error
 // so it could be expected only a successful result is passed.
+// The mapper function could also return an error which get assigned into the returned
+// parser state.
 func (p Parser) Map(mapper func(ps ParserState) (interface{}, error)) Parser {
 	return Parser{
 		Func: func(ps ParserState) ParserState {
